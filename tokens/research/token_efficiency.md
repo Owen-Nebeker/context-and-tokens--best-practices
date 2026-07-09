@@ -14,6 +14,11 @@ That means teams should spend tokens on reasoning, grounding, and verification w
 
 ## Basic Token-Saving Skills
 
+-Prompt caching with a 1-hour Time-To-Live (TTL) allows you to maintain frequently accessed context, documents, or system prompts for up to 60 minutes. This prevents the model from reprocessing data and significantly reduces input token costs
+-Don't interrupt the model mid question, use /btw to run a parrellel prompt that wont interrupt the current one. 
+- USE THE TERMINAL VERSION OF CLAUDE
+- Don't stack pointless MCPs they will load every tool you have every time you start a session even if you don't use the tool.
+
 ### 1. Measure Token Use First
 
 Before changing prompts or models, measure where tokens are going.
