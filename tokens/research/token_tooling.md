@@ -8,7 +8,6 @@ Initial scope:
 
 - [juliusbrussee/caveman](https://github.com/JuliusBrussee/caveman)
 - RTK / Rust-based harness ideas for token budgets and command wrappers
-- Context-foundry-style tooling for compressing CLI output before sending it to LLMs
 
 ## Short Recommendation
 
@@ -155,22 +154,6 @@ Received: active
 
 This gives the model enough information to act while keeping the full output available when needed.
 
-## Context-Foundry-Style CLI Compression
-
-No specific public "Context Foundry" CLI-output compressor was verified during this pass. This section uses the phrase as a design pattern: a small toolchain that turns noisy raw command output into compact, high-signal model input.
-
-### Design Pattern
-
-A foundry-style token tool should treat model input as something manufactured:
-
-1. Ingest raw command output.
-2. Classify output by usefulness.
-3. Preserve exact high-value lines.
-4. Summarize repetitive sections.
-5. Store raw output separately.
-6. Emit compact model-ready text.
-7. Measure token savings.
-
 ### Compression Rules
 
 Good compression rules:
@@ -206,17 +189,6 @@ CLI command
   -> raw artifact link for fallback
 ```
 
-### When To Use LLM Compression
-
-Use deterministic compression first. Use LLM compression only when:
-
-- The output is still too large after rule-based cleanup.
-- The raw output has already been saved.
-- The task can tolerate a lossy summary.
-- The summary is labeled as a summary, not exact output.
-
-For build failures, compiler errors, failing tests, and security logs, deterministic extraction should be preferred.
-
 ## Evaluation Matrix
 
 | Tool or Idea | Saves Input Tokens | Saves Output Tokens | Best Fit | Main Risk | Recommendation |
@@ -226,47 +198,6 @@ For build failures, compiler errors, failing tests, and security logs, determini
 | Rust token harness | Yes | Indirectly | CLI output, logs, agent tool output | Bad filters may hide critical details | Highest priority prototype |
 | Token budget enforcement | Yes, by stopping overspend | Indirectly | Agents, retries, multi-agent tasks | Overly strict budgets may block valid work | Add as guardrail |
 | Foundry-style CLI compression | Yes | Indirectly | Test logs, build output, command output | Lossy summaries may mislead models | Use deterministic rules first |
-
-## Prototype Plan
-
-### Phase 1: Manual Baseline
-
-- Pick 10 common commands: tests, builds, type checks, linters, dbt runs, SQL failures, and package installs.
-- Capture raw output.
-- Hand-write compact versions.
-- Estimate token savings.
-- Check whether an LLM can still fix or explain the issue.
-
-### Phase 2: Rust CLI Wrapper
-
-- Build `tokentool run -- <command>`.
-- Store raw logs in `.token-artifacts/`.
-- Emit compact summaries.
-- Add token estimates.
-- Add max-token budget flags.
-- Add snapshot tests for known noisy outputs.
-
-### Phase 3: Agent Integration
-
-- Configure Codex, Claude Code, and other agents to prefer compact command output.
-- Add fallback command to request raw output when needed.
-- Measure tokens, retries, task success, and wall-clock time.
-
-### Phase 4: Company Standard
-
-- Use compact output wrappers for high-volume workflows.
-- Keep raw artifacts for auditability.
-- Require A/B data before claiming savings.
-- Document which commands are safe to compact and which must remain raw.
-
-## Open Questions
-
-- What are the top 10 commands that create the most model-bound output?
-- Which logs can be compacted safely with deterministic rules?
-- Which outputs require exact preservation?
-- Which tokenizer should be used for estimates across OpenAI, Claude, Gemini, and local models?
-- Should the harness live as a standalone CLI, Codex skill, Claude Code hook, or MCP middleware?
-- How should raw artifacts be stored and cleaned up?
 
 ## Source Notes
 
