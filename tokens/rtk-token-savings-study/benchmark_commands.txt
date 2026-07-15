@@ -1,0 +1,6 @@
+# Review this list before running scripts/run_benchmark.sh.
+# Keep commands read-only or safe for the repo under test.
+git status
+git diff
+git log -n 20
+rg "TODO" .

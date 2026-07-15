@@ -89,7 +89,11 @@ Default policy:
 
 ## RTK / Rust-Based Harness Ideas
 
-This section treats RTK as an internal shorthand for a Rust token toolkit or runtime token kit. The useful idea is not the name; it is the architecture.
+This section now tracks both the public [rtk-ai/rtk](https://github.com/rtk-ai/rtk) project and the broader internal harness pattern it represents. RTK is a CLI proxy that filters command output before it reaches the LLM context and includes local savings analytics through commands such as `rtk gain`, `rtk gain --daily`, and `rtk gain --all --format json`.
+
+For a company-facing evaluation kit, see [RTK Token Savings Study](../rtk-token-savings-study/README.md).
+
+The useful idea is not only the tool name; it is the architecture.
 
 ### Why Rust
 

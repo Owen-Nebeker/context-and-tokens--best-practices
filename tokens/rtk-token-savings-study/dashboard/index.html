@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RTK Token Savings Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #65717c;
+      --line: #d9dfd6;
+      --green: #287c64;
+      --blue: #2f6f9f;
+      --amber: #b06a22;
+      --red: #b5473b;
+      --soft-green: #e4f1eb;
+      --soft-blue: #e5eef8;
+      --soft-amber: #faeddc;
+      --shadow: 0 12px 30px rgba(29, 41, 51, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.8vw, 2.25rem);
+      line-height: 1.08;
+      font-weight: 760;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+      max-width: 820px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: var(--soft-amber);
+      color: #75420e;
+      font-weight: 700;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    main {
+      padding: 24px 0 40px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .control {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"],
+    input[type="number"],
+    select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      background: #fbfcfa;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .kpis {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .card,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 16px;
+      min-height: 128px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin-top: 10px;
+      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .metric-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .two-col {
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      margin-top: 16px;
+    }
+
+    .panel {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 78px;
+      align-items: center;
+      gap: 10px;
+      min-height: 28px;
+      font-size: 0.9rem;
+    }
+
+    .track {
+      height: 13px;
+      background: #edf0eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+    }
+
+    .daily-chart {
+      display: grid;
+      grid-template-columns: repeat(var(--days), minmax(28px, 1fr));
+      align-items: end;
+      gap: 10px;
+      min-height: 240px;
+      border-left: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0 0 10px;
+    }
+
+    .day {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 8px;
+      align-items: end;
+      height: 220px;
+      min-width: 0;
+    }
+
+    .day-bar {
+      width: 100%;
+      min-height: 4px;
+      border-radius: 6px 6px 0 0;
+      background: var(--blue);
+    }
+
+    .day-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th,
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .method {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .method .panel {
+      box-shadow: none;
+    }
+
+    .quiet {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.92rem;
+    }
+
+    .status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 980px) {
+      .controls,
+      .kpis,
+      .method {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .controls,
+      .kpis,
+      .method {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 76px minmax(0, 1fr) 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div>
+        <h1>RTK Token Savings Dashboard</h1>
+        <p class="subtitle">Executive view of baseline command-output tokens, RTK-filtered tokens, estimated savings, adoption, and missed opportunities.</p>
+      </div>
+      <span id="dataBadge" class="badge">Sample data</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="controls" aria-label="Dashboard inputs">
+      <div class="control">
+        <label for="baselineFile">Baseline CSV</label>
+        <input id="baselineFile" type="file" accept=".csv,text/csv">
+      </div>
+      <div class="control">
+        <label for="rtkFile">RTK Benchmark CSV</label>
+        <input id="rtkFile" type="file" accept=".csv,text/csv">
+      </div>
+      <div class="control">
+        <label for="gainFile">RTK Gain JSON</label>
+        <input id="gainFile" type="file" accept=".json,application/json">
+      </div>
+      <div class="control">
+        <label for="price">Blended $ / 1M Tokens</label>
+        <input id="price" type="number" min="0" step="0.01" value="6.00">
+      </div>
+    </section>
+
+    <section class="grid kpis" aria-label="Executive KPIs">
+      <article class="card">
+        <div class="metric-label">Tokens Saved</div>
+        <div id="tokensSaved" class="metric-value">0</div>
+        <div id="tokensSavedNote" class="metric-note">Across controlled RTK benchmark rows.</div>
+      </article>
+      <article class="card">
+        <div class="metric-label">Savings Rate</div>
+        <div id="savingsRate" class="metric-value">0%</div>
+        <div class="metric-note">Raw command-output tokens vs RTK output.</div>
+      </article>
+      <article class="card">
+        <div class="metric-label">Estimated Pilot $</div>
+        <div id="pilotUsd" class="metric-value">$0</div>
+        <div id="pilotUsdNote" class="metric-note">Based on selected blended price.</div>
+      </article>
+      <article class="card">
+        <div class="metric-label">Projected Monthly $</div>
+        <div id="monthlyUsd" class="metric-value">$0</div>
+        <div id="monthlyUsdNote" class="metric-note">Scaled from observed daily savings.</div>
+      </article>
+      <article class="card">
+        <div class="metric-label">Commands Measured</div>
+        <div id="commandsMeasured" class="metric-value">0</div>
+        <div id="commandsMeasuredNote" class="metric-note">Benchmark rows plus RTK gain summary.</div>
+      </article>
+    </section>
+
+    <section class="grid two-col">
+      <article class="panel">
+        <h2>Daily Tokens Saved</h2>
+        <div id="dailyChart" class="daily-chart" style="--days: 5"></div>
+        <div id="dailyStatus" class="status"></div>
+      </article>
+      <article class="panel">
+        <h2>Savings By Command Category</h2>
+        <div id="categoryBars" class="bars"></div>
+      </article>
+    </section>
+
+    <section class="grid two-col">
+      <article class="panel">
+        <h2>Benchmark Detail</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Command</th>
+                <th class="num">Raw Tokens</th>
+                <th class="num">RTK Tokens</th>
+                <th class="num">Saved</th>
+                <th class="num">Rate</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarkRows"></tbody>
+          </table>
+        </div>
+      </article>
+      <article class="panel">
+        <h2>Missed Opportunities</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th class="num">Count</th>
+                <th class="num">Potential Tokens</th>
+              </tr>
+            </thead>
+            <tbody id="missedRows"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="method" aria-label="Study method">
+      <article class="panel">
+        <h2>Measurement</h2>
+        <p class="quiet">Baseline rows estimate normal command-output tokens before RTK. Benchmark rows compare the same raw command against RTK-filtered output.</p>
+      </article>
+      <article class="panel">
+        <h2>Cost Model</h2>
+        <p class="quiet">Dollar savings use a blended token price. Replace the sample value with approved internal pricing before presenting results.</p>
+      </article>
+      <article class="panel">
+        <h2>Decision Bar</h2>
+        <p class="quiet">Treat RTK as rollout-ready when savings are material, diagnostic detail is preserved, and raw-output fallback is available.</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const sampleBaseline = [
+      { date: "2026-07-08", task_type: "git", command: "git status", estimated_tokens: "460" },
+      { date: "2026-07-08", task_type: "git", command: "git diff", estimated_tokens: "3200" },
+      { date: "2026-07-08", task_type: "search", command: 'rg "TODO" .', estimated_tokens: "2400" },
+      { date: "2026-07-08", task_type: "test", command: "npm test", estimated_tokens: "10500" },
+      { date: "2026-07-09", task_type: "git", command: "git log -n 20", estimated_tokens: "1900" },
+      { date: "2026-07-09", task_type: "test", command: "pytest", estimated_tokens: "8375" },
+      { date: "2026-07-09", task_type: "logs", command: "docker logs api", estimated_tokens: "13000" }
+    ];
+
+    const sampleRtk = [
+      { task_type: "git", raw_command: "git status", rtk_command: "rtk git status", raw_estimated_tokens: "460", rtk_estimated_tokens: "90" },
+      { task_type: "git", raw_command: "git diff", rtk_command: "rtk git diff", raw_estimated_tokens: "3200", rtk_estimated_tokens: "800" },
+      { task_type: "search", raw_command: 'rg "TODO" .', rtk_command: 'rtk grep "TODO" .', raw_estimated_tokens: "2400", rtk_estimated_tokens: "475" },
+      { task_type: "test", raw_command: "npm test", rtk_command: "rtk npm test", raw_estimated_tokens: "10500", rtk_estimated_tokens: "1050" },
+      { task_type: "git", raw_command: "git log -n 20", rtk_command: "rtk git log -n 20", raw_estimated_tokens: "1900", rtk_estimated_tokens: "375" },
+      { task_type: "test", raw_command: "pytest", rtk_command: "rtk pytest", raw_estimated_tokens: "8375", rtk_estimated_tokens: "850" },
+      { task_type: "logs", raw_command: "docker logs api", rtk_command: "rtk docker logs api", raw_estimated_tokens: "13000", rtk_estimated_tokens: "1950" }
+    ];
+
+    const sampleGain = {
+      summary: { commands: 86, raw_tokens: 312000, rtk_tokens: 68400, tokens_saved: 243600, savings_pct: 78.1, active_days: 5 },
+      daily: [
+        { date: "2026-07-12", commands: 12, raw_tokens: 42800, rtk_tokens: 9700, tokens_saved: 33100 },
+        { date: "2026-07-13", commands: 19, raw_tokens: 69100, rtk_tokens: 14600, tokens_saved: 54500 },
+        { date: "2026-07-14", commands: 17, raw_tokens: 58600, rtk_tokens: 13200, tokens_saved: 45400 },
+        { date: "2026-07-15", commands: 21, raw_tokens: 84200, rtk_tokens: 17900, tokens_saved: 66300 },
+        { date: "2026-07-16", commands: 17, raw_tokens: 57300, rtk_tokens: 13000, tokens_saved: 44300 }
+      ],
+      by_category: [
+        { category: "test", commands: 23, raw_tokens: 148000, rtk_tokens: 20500, tokens_saved: 127500 },
+        { category: "git", commands: 28, raw_tokens: 64500, rtk_tokens: 13900, tokens_saved: 50600 },
+        { category: "search", commands: 18, raw_tokens: 47600, rtk_tokens: 10800, tokens_saved: 36800 },
+        { category: "logs", commands: 9, raw_tokens: 38200, rtk_tokens: 15100, tokens_saved: 23100 },
+        { category: "build", commands: 8, raw_tokens: 13700, rtk_tokens: 8100, tokens_saved: 5600 }
+      ],
+      missed_opportunities: [
+        { command: "terraform plan", count: 6, estimated_tokens: 22000 },
+        { command: "kubectl describe pod", count: 4, estimated_tokens: 14000 },
+        { command: "cat large.log", count: 3, estimated_tokens: 18000 }
+      ]
+    };
+
+    const state = {
+      baseline: sampleBaseline,
+      rtk: sampleRtk,
+      gain: sampleGain,
+      usingSample: true
+    };
+
+    function num(value) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function fmt(value) {
+      return Math.round(value).toLocaleString();
+    }
+
+    function money(value) {
+      return value.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: value < 100 ? 2 : 0 });
+    }
+
+    function pct(value) {
+      return `${value.toFixed(1)}%`;
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      const lines = text.trim().split(/\r?\n/);
+      if (!lines.length) return rows;
+      const headers = splitCsvLine(lines.shift());
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const values = splitCsvLine(line);
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] ?? "";
+        });
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function splitCsvLine(line) {
+      const out = [];
+      let current = "";
+      let quoted = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+        if (char === '"' && quoted && next === '"') {
+          current += '"';
+          i++;
+        } else if (char === '"') {
+          quoted = !quoted;
+        } else if (char === "," && !quoted) {
+          out.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      out.push(current);
+      return out;
+    }
+
+    function aggregateCategory(rows) {
+      const byCategory = new Map();
+      for (const row of rows) {
+        const category = row.task_type || row.category || "other";
+        const raw = num(row.raw_estimated_tokens);
+        const rtk = num(row.rtk_estimated_tokens);
+        const current = byCategory.get(category) || { category, commands: 0, raw_tokens: 0, rtk_tokens: 0, tokens_saved: 0 };
+        current.commands += 1;
+        current.raw_tokens += raw;
+        current.rtk_tokens += rtk;
+        current.tokens_saved += Math.max(raw - rtk, 0);
+        byCategory.set(category, current);
+      }
+      return [...byCategory.values()].sort((a, b) => b.tokens_saved - a.tokens_saved);
+    }
+
+    function dailyFromGain(gain) {
+      return Array.isArray(gain.daily) ? gain.daily : [];
+    }
+
+    function categoryFromGain(gain, rows) {
+      return Array.isArray(gain.by_category) && gain.by_category.length ? gain.by_category : aggregateCategory(rows);
+    }
+
+    function render() {
+      const price = num(document.getElementById("price").value);
+      const rawTokens = state.rtk.reduce((sum, row) => sum + num(row.raw_estimated_tokens), 0);
+      const rtkTokens = state.rtk.reduce((sum, row) => sum + num(row.rtk_estimated_tokens), 0);
+      const benchmarkSaved = Math.max(rawTokens - rtkTokens, 0);
+      const gainSummary = state.gain.summary || {};
+      const totalSaved = num(gainSummary.tokens_saved) || benchmarkSaved;
+      const totalRaw = num(gainSummary.raw_tokens) || rawTokens;
+      const activeDays = num(gainSummary.active_days) || Math.max(dailyFromGain(state.gain).length, 1);
+      const savingsRate = totalRaw ? totalSaved / totalRaw * 100 : 0;
+      const pilotUsd = totalSaved / 1_000_000 * price;
+      const monthlyUsd = activeDays ? pilotUsd / activeDays * 22 : 0;
+      const commands = num(gainSummary.commands) || state.rtk.length;
+
+      document.getElementById("dataBadge").textContent = state.usingSample ? "Sample data" : "Uploaded data";
+      document.getElementById("tokensSaved").textContent = fmt(totalSaved);
+      document.getElementById("tokensSavedNote").textContent = `${fmt(totalRaw)} raw tokens measured.`;
+      document.getElementById("savingsRate").textContent = pct(savingsRate);
+      document.getElementById("pilotUsd").textContent = money(pilotUsd);
+      document.getElementById("pilotUsdNote").textContent = `${money(price)} per 1M blended tokens.`;
+      document.getElementById("monthlyUsd").textContent = money(monthlyUsd);
+      document.getElementById("monthlyUsdNote").textContent = `Projected from ${activeDays} active day${activeDays === 1 ? "" : "s"}.`;
+      document.getElementById("commandsMeasured").textContent = fmt(commands);
+      document.getElementById("commandsMeasuredNote").textContent = `${state.rtk.length} controlled benchmark rows.`;
+
+      renderDaily(dailyFromGain(state.gain));
+      renderCategories(categoryFromGain(state.gain, state.rtk));
+      renderBenchmarkRows();
+      renderMissed();
+    }
+
+    function renderDaily(days) {
+      const chart = document.getElementById("dailyChart");
+      chart.innerHTML = "";
+      chart.style.setProperty("--days", Math.max(days.length, 1));
+      const max = Math.max(...days.map(day => num(day.tokens_saved)), 1);
+      for (const day of days) {
+        const height = Math.max(num(day.tokens_saved) / max * 100, 2);
+        const node = document.createElement("div");
+        node.className = "day";
+        node.innerHTML = `<div class="day-bar" title="${fmt(num(day.tokens_saved))} tokens saved" style="height:${height}%"></div><div class="day-label">${day.date.slice(5)}</div>`;
+        chart.appendChild(node);
+      }
+      document.getElementById("dailyStatus").textContent = days.length ? `${days.length} daily observations loaded.` : "No daily RTK gain data loaded.";
+    }
+
+    function renderCategories(categories) {
+      const target = document.getElementById("categoryBars");
+      target.innerHTML = "";
+      const max = Math.max(...categories.map(row => num(row.tokens_saved)), 1);
+      for (const row of categories) {
+        const width = Math.max(num(row.tokens_saved) / max * 100, 2);
+        const el = document.createElement("div");
+        el.className = "bar-row";
+        el.innerHTML = `<strong>${row.category}</strong><div class="track"><div class="fill" style="width:${width}%"></div></div><span class="num">${fmt(num(row.tokens_saved))}</span>`;
+        target.appendChild(el);
+      }
+    }
+
+    function renderBenchmarkRows() {
+      const tbody = document.getElementById("benchmarkRows");
+      tbody.innerHTML = "";
+      for (const row of state.rtk) {
+        const raw = num(row.raw_estimated_tokens);
+        const rtk = num(row.rtk_estimated_tokens);
+        const saved = Math.max(raw - rtk, 0);
+        const rate = raw ? saved / raw * 100 : 0;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.task_type || ""}</td><td>${row.raw_command || row.command || ""}</td><td class="num">${fmt(raw)}</td><td class="num">${fmt(rtk)}</td><td class="num">${fmt(saved)}</td><td class="num">${pct(rate)}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function renderMissed() {
+      const tbody = document.getElementById("missedRows");
+      tbody.innerHTML = "";
+      const missed = Array.isArray(state.gain.missed_opportunities) ? state.gain.missed_opportunities : [];
+      for (const row of missed) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.command || ""}</td><td class="num">${fmt(num(row.count))}</td><td class="num">${fmt(num(row.estimated_tokens))}</td>`;
+        tbody.appendChild(tr);
+      }
+      if (!missed.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3" class="quiet">No missed-opportunity export loaded.</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function loadFile(input, handler) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const text = await file.text();
+      handler(text);
+      state.usingSample = false;
+      render();
+    }
+
+    document.getElementById("baselineFile").addEventListener("change", event => {
+      loadFile(event.target, text => { state.baseline = parseCsv(text); });
+    });
+
+    document.getElementById("rtkFile").addEventListener("change", event => {
+      loadFile(event.target, text => { state.rtk = parseCsv(text); });
+    });
+
+    document.getElementById("gainFile").addEventListener("change", event => {
+      loadFile(event.target, text => { state.gain = JSON.parse(text); });
+    });
+
+    document.getElementById("price").addEventListener("input", render);
+
+    render();
+  </script>
+</body>
+</html>

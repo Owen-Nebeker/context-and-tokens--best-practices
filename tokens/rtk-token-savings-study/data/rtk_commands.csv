@@ -1,0 +1,8 @@
+date,developer,repo,task_type,raw_command,rtk_command,raw_output_chars,rtk_output_chars,raw_estimated_tokens,rtk_estimated_tokens,duration_seconds,quality_notes
+2026-07-15,pilot-dev-1,example-api,git,git status,rtk git status,1840,360,460,90,1.1,sample matched needed status
+2026-07-15,pilot-dev-1,example-api,git,git diff,12800,3200,3200,800,1.9,sample retained changed files
+2026-07-15,pilot-dev-1,example-api,search,rg "TODO" .,rtk grep "TODO" .,9600,1900,2400,475,2.0,sample grouped matches
+2026-07-15,pilot-dev-1,example-api,test,npm test,rtk npm test,42000,4200,10500,1050,24.8,sample retained failures only
+2026-07-16,pilot-dev-2,example-web,git,git log -n 20,rtk git log -n 20,7600,1500,1900,375,1.3,sample one-line commits
+2026-07-16,pilot-dev-2,example-web,test,pytest,rtk pytest,33500,3400,8375,850,19.0,sample retained failing tests
+2026-07-16,pilot-dev-2,example-web,logs,docker logs api,rtk docker logs api,52000,7800,13000,1950,3.6,sample deduplicated repeated logs

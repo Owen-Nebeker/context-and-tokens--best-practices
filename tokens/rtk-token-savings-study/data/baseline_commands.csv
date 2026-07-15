@@ -1,0 +1,8 @@
+date,developer,repo,task_type,command,raw_output_chars,estimated_tokens,duration_seconds,quality_notes
+2026-07-08,pilot-dev-1,example-api,git,git status,1840,460,1.2,baseline sample
+2026-07-08,pilot-dev-1,example-api,git,git diff,12800,3200,1.8,baseline sample
+2026-07-08,pilot-dev-1,example-api,search,rg "TODO" .,9600,2400,2.1,baseline sample
+2026-07-08,pilot-dev-1,example-api,test,npm test,42000,10500,24.4,baseline sample
+2026-07-09,pilot-dev-2,example-web,git,git log -n 20,7600,1900,1.4,baseline sample
+2026-07-09,pilot-dev-2,example-web,test,pytest,33500,8375,18.7,baseline sample
+2026-07-09,pilot-dev-2,example-web,logs,docker logs api,52000,13000,3.5,baseline sample
