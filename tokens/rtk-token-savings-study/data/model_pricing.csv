@@ -1,0 +1,4 @@
+model,input_usd_per_1m_tokens,output_usd_per_1m_tokens,blended_usd_per_1m_tokens,notes
+example-blended-low,1.25,5.00,2.50,Replace with approved internal pricing
+example-blended-mid,3.00,15.00,6.00,Default dashboard sample
+example-blended-high,10.00,30.00,15.00,Conservative premium-model scenario

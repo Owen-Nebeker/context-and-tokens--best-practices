@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-07-16T17:00:00-06:00",
+  "source": "sample_data_replace_with_rtk_gain_all_format_json",
+  "summary": {
+    "commands": 86,
+    "raw_tokens": 312000,
+    "rtk_tokens": 68400,
+    "tokens_saved": 243600,
+    "savings_pct": 78.1,
+    "active_days": 5,
+    "estimated_usd_saved": 1.46
+  },
+  "daily": [
+    {"date": "2026-07-12", "commands": 12, "raw_tokens": 42800, "rtk_tokens": 9700, "tokens_saved": 33100},
+    {"date": "2026-07-13", "commands": 19, "raw_tokens": 69100, "rtk_tokens": 14600, "tokens_saved": 54500},
+    {"date": "2026-07-14", "commands": 17, "raw_tokens": 58600, "rtk_tokens": 13200, "tokens_saved": 45400},
+    {"date": "2026-07-15", "commands": 21, "raw_tokens": 84200, "rtk_tokens": 17900, "tokens_saved": 66300},
+    {"date": "2026-07-16", "commands": 17, "raw_tokens": 57300, "rtk_tokens": 13000, "tokens_saved": 44300}
+  ],
+  "by_category": [
+    {"category": "test", "commands": 23, "raw_tokens": 148000, "rtk_tokens": 20500, "tokens_saved": 127500},
+    {"category": "git", "commands": 28, "raw_tokens": 64500, "rtk_tokens": 13900, "tokens_saved": 50600},
+    {"category": "search", "commands": 18, "raw_tokens": 47600, "rtk_tokens": 10800, "tokens_saved": 36800},
+    {"category": "logs", "commands": 9, "raw_tokens": 38200, "rtk_tokens": 15100, "tokens_saved": 23100},
+    {"category": "build", "commands": 8, "raw_tokens": 13700, "rtk_tokens": 8100, "tokens_saved": 5600}
+  ],
+  "missed_opportunities": [
+    {"command": "terraform plan", "count": 6, "estimated_tokens": 22000, "reason": "not currently routed through rtk in sample"},
+    {"command": "kubectl describe pod", "count": 4, "estimated_tokens": 14000, "reason": "manual raw command used in sample"},
+    {"command": "cat large.log", "count": 3, "estimated_tokens": 18000, "reason": "use rtk log or rtk read"}
+  ]
+}
